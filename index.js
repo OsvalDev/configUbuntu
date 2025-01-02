@@ -7,13 +7,13 @@ function createWindow() {
     height: 1080,
     fullscreen: true,
     frame: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     webPreferences: {
       nodeIntegration: true
     }
   })
 
-  win.loadURL('170.1.1.10:3008')
+  win.loadURL('http://170.1.1.10:3008/')
 }
 
 app.whenReady().then(() => {
