@@ -8,7 +8,9 @@ sudo dpkg -i rustdesk-1.3.6-aarch64.deb
 rm rustdesk-1.3.6-aarch64.deb
 
 #Crear el build de la aplicacion
-sudo apt install node
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install 22
+nvm use 22
 npm i
 npx electron-packager . monitortaller --platform=linux --arch=armv7l
 
