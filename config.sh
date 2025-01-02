@@ -16,7 +16,7 @@ export NVM_DIR="$HOME/.nvm"
 nvm install 22
 nvm use 22
 npm i
-npx electron-packager . monitortaller --platform=linux --arch=armv7l
+npx electron-packager . monitortaller --platform=linux --arch=arm64
 
 # Ruta a la aplicación empaquetada
 APP_PATH="./monitortaller-linux-arm64"
@@ -44,3 +44,52 @@ EOL
 
 # Establecer permisos
 chmod +x "$DESKTOP_FILE"
+
+#Config ip network
+read -p "¿Quieres configurar la red? (s/n): " answer
+
+if [[ "$answer" == "s" ]]; then
+    echo "Configuración de red IPv4 estática:"
+    
+    # Pedir los parámetros necesarios
+    read -p "Ingresa la IP: " ip_address
+    read -p "Ingresa la Netmask: " netmask
+    read -p "Ingresa la Gateway: " gateway
+    read -p "Ingresa el DNS (separado por comas si hay más de uno): " dns
+
+    # Obtener el nombre de la interfaz de red
+    interface=$(ip -o link show | awk -F': ' '{print $2}' | grep -E "en|eth" | head -n 1)
+
+    if [[ -z "$interface" ]]; then
+        echo "No se detectó ninguna interfaz de red con cable. Asegúrate de que esté conectada."
+        exit 1
+    fi
+
+    echo "Configurando la interfaz $interface con los siguientes parámetros:"
+    echo "IP: $ip_address"
+    echo "Netmask: $netmask"
+    echo "Gateway: $gateway"
+    echo "DNS: $dns"
+
+    # Crear archivo de configuración temporal para NetworkManager
+    config_file="/etc/NetworkManager/system-connections/$interface.nmconnection"
+    sudo tee "$config_file" > /dev/null <<EOL
+[connection]
+id=$interface
+uuid=$(uuidgen)
+type=ethernet
+interface-name=$interface
+
+[ipv4]
+address1=$ip_address/$netmask,$gateway
+dns=$dns
+method=manual
+
+[ipv6]
+method=ignore
+EOL
+
+    # Aplicar los cambios
+    sudo chmod 600 "$config_file"
+    sudo systemctl restart NetworkManager
+fi
