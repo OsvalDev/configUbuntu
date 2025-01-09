@@ -2,7 +2,7 @@
 echo Configurando linux ...
 
 #Instalacion de dependencias y rustdesk
-sudo apt install curl libva2 libva-drm2 libva-x11-2
+sudo apt install curl libva2 libva-drm2 libva-x11-2 libxdo3
 wget https://github.com/rustdesk/rustdesk/releases/download/1.3.6/rustdesk-1.3.6-aarch64.deb
 sudo dpkg -i rustdesk-1.3.6-aarch64.deb
 rm rustdesk-1.3.6-aarch64.deb
